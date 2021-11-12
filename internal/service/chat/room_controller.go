@@ -30,7 +30,7 @@ func (controller *RoomController) getRoom(id uint) (room Room, err error) {
 	return
 }
 
-func (controller *RoomController) NewRoom(title string) (room Room, err error) {
+func (controller *RoomController) NewRoom(title string) (roomEntity entity.Chat, err error) {
 	var newChat entity.Chat
 	newChat.Title = title
 	result := controller.db.Create(&newChat)
@@ -38,8 +38,9 @@ func (controller *RoomController) NewRoom(title string) (room Room, err error) {
 		err = &RoomError{result.Error.Error()}
 		return
 	}
-	room = Room{db: controller.db, ID: newChat.ID, chat: newChat}
+	room := Room{db: controller.db, ID: newChat.ID, chat: newChat}
 	controller.rooms = append(controller.rooms, room)
+	roomEntity = room.chat
 	return
 }
 
@@ -53,7 +54,7 @@ func (controller *RoomController) GetRoomEntity(id uint) (roomEntity entity.Chat
 	return
 }
 
-func (controller *RoomController) SendMessage(message entity.Message) (messages []entity.Message) {
+func (controller *RoomController) SendMessage(message entity.Message) (messages []entity.Message, err error) {
 	room, err := controller.getRoom(message.ChatID)
 	if err != nil {
 		return
@@ -73,7 +74,7 @@ func (controller *RoomController) GetAvailableRooms() (rooms []entity.Chat) {
 	return
 }
 
-func NewRoomDirector(db *gorm.DB) (controller RoomController) {
+func NewRoomController(db *gorm.DB) (controller RoomController) {
 	controller = RoomController{db: db}
 	controller.flushRooms()
 	return

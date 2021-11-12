@@ -3,5 +3,8 @@ package service
 import "go_grpc_messanger/internal/entity"
 
 type Messenger interface {
-	SendMessage(user entity.User, chat entity.Chat, message string) error
+	GetAvailableRooms() (rooms []entity.Chat)
+	NewRoom(title string) (roomEntity entity.Chat, err error)
+	GetRoomEntity(id uint) (roomEntity entity.Chat, messages []entity.Message, err error)
+	SendMessage(message entity.Message) (messages []entity.Message, err error)
 }
