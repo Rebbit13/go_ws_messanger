@@ -3,6 +3,6 @@ package storage
 import "gorm.io/gorm"
 
 type Storage interface {
-	InitDatabase()
+	InitDatabase(entities []interface{})
 	GetDatabase() *gorm.DB
 }

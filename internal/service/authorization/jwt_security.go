@@ -41,6 +41,11 @@ func (auth *JWTAuth) SignIn(username, password string) (user entity.User, access
 }
 
 func (auth *JWTAuth) SignUp(username, password string) (user entity.User, accessToken, refreshToken string, err error) {
+	auth.db.First(&user, "username = ?", username)
+	if user.ID != 0 {
+		err = &AuthError{"user already exist"}
+		return
+	}
 	hashedPassword, err := auth.hashService.HashPassword(password)
 	if err != nil {
 		err = &AuthError{err.Error()}
