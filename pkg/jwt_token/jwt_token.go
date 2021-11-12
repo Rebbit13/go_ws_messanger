@@ -2,7 +2,6 @@ package jwt_token
 
 import (
 	"github.com/golang-jwt/jwt"
-	"go_grpc_messanger/pkg/string_error"
 	"time"
 )
 
@@ -23,7 +22,7 @@ func (service *JWTTokenService) ValidateJWTToken(token string) (claims jwt.Claim
 	}
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !parsedToken.Valid || !ok {
-		err = &string_error.StringError{"token invalid"}
+		err = &JWTServiceError{"token invalid"}
 		return
 	}
 	return
@@ -45,7 +44,7 @@ func (service *JWTTokenService) CreateJWTTokens(userId string) (accessToken, ref
 
 func NewJWTTokenService(secret []byte, accessTokenTTL time.Duration, refreshTokenTTL time.Duration) (service JWTTokenService, err error){
 	if accessTokenTTL >= refreshTokenTTL {
-		err = &string_error.StringError{"refresh token must live more than access"}
+		err = &JWTServiceError{"refresh token must live more than access"}
 		return
 	}
 	return JWTTokenService{secret: secret, accessTokenTTL: accessTokenTTL, refreshTokenTTL: refreshTokenTTL}, nil
