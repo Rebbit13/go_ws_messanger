@@ -15,7 +15,7 @@ func (service *JWTTokenService) validateKey(*jwt.Token) (interface{}, error) {
 	return service.secret, nil
 }
 
-func (service *JWTTokenService) ValidateJWTToken(token string) (claims jwt.Claims, err error) {
+func (service *JWTTokenService) validateJWTToken(token string) (claims jwt.Claims, err error) {
 	parsedToken, err := jwt.Parse(token, service.validateKey)
 	if err != nil {
 		return
@@ -28,7 +28,16 @@ func (service *JWTTokenService) ValidateJWTToken(token string) (claims jwt.Claim
 	return
 }
 
-func (service *JWTTokenService) CreateJWTTokens(userId string) (accessToken, refreshToken string) {
+func (service *JWTTokenService) ValidateAccessToken(token string) (claims jwt.Claims, err error) {
+	claims, err = service.validateJWTToken(token)
+	if err != nil || claims.(jwt.MapClaims)["type"] != "access" {
+		err = &JWTServiceError{"token invalid"}
+		return
+	}
+	return
+}
+
+func (service *JWTTokenService) CreateJWTTokens(userId interface{}) (accessToken, refreshToken string) {
 	accessToken, _ = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"type":     "access",
 		"user_id":  userId,
@@ -39,6 +48,16 @@ func (service *JWTTokenService) CreateJWTTokens(userId string) (accessToken, ref
 		"user_id":  userId,
 		"ttl":      time.Now().Add(service.refreshTokenTTL),
 	}).SignedString(service.secret)
+	return
+}
+
+func (service *JWTTokenService) RefreshToken(token string) (accessToken, refreshToken string, err error) {
+	claims, err := service.validateJWTToken(token)
+	if err != nil || claims.(jwt.MapClaims)["type"] != "refresh" {
+		err = &JWTServiceError{"token invalid"}
+		return
+	}
+	accessToken, refreshToken = service.CreateJWTTokens(claims.(jwt.MapClaims)["user_id"])
 	return
 }
 
