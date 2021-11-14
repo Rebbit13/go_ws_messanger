@@ -1,0 +1,231 @@
+body {
+    margin: 0px;
+}
+
+.page {
+    height: 60rem;
+}
+
+.rooms {
+    float: left;
+    height: 100%;
+    width: 30%;
+    background-color: #11eded;
+    overflow: scroll;
+}
+
+.room-list {
+    padding: 0px;
+    list-style: none;
+}
+
+.room-list-item {
+    height: 50px;
+    width: 100%;
+}
+
+.room-list-item button {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: darkcyan;
+    text-align: left;
+    font-size: 25px;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    height: 100%;
+    border-style: solid;
+    border-color: darkcyan;
+    background-color: #11eded;
+}
+
+
+.room-list-item button:hover {
+    background-color: #deffff;
+}
+
+
+.room-list-item button:disabled {
+    background-color: white;
+}
+
+.messages {
+    margin-left: 0px;
+    float: left;
+    height: 100%;
+    width: 70%;
+    background-color: #deffff;
+}
+.messages-container {
+    float: left;
+    height: 95%;
+    width: 100%;
+    overflow: scroll;
+}
+
+.messages-list {
+    padding: 0px;
+    list-style: none;
+    font-family: monospace;
+    text-indent: 0px;
+}
+
+.message {
+    padding-left: 5px;
+    margin-left: 30px;
+    margin-bottom: 10px;
+    width: 70%;
+    background-color: white;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: darkgray;
+}
+
+.message-author {
+    color: darkcyan;
+    float: left;
+}
+
+.message-created-at {
+    color: darkcyan;
+    float: right;
+    margin-right: 10px;
+}
+
+.message-text {
+    margin-top: 45px;
+}
+
+.massage-input-container {
+    padding: 0.5%;
+    float: left;
+    height: 4.2%;
+    width: 99%;
+    background-color: #11eded;
+    box-shadow: 0px 5px 5px -5px rgba(0, 0, 0, 0.6) inset;
+
+}
+
+.message-input {
+    float: left;
+    border-radius: 15px;
+    border-color: cadetblue;
+    border-style: solid;
+    width: 92%;
+    height: 85%;
+    font-family: monospace;
+}
+
+.send-message {
+    margin-left: 4px;
+    margin-top: 1px;
+    padding: 0px;
+    height: 94%;
+    float: left;
+    width: 6%;
+}
+
+.send-message form {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.send-message button {
+    padding: 0px;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-family: monospace;
+    border-style: none;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.registration {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+}
+
+.registration-form-container {
+    margin: auto;
+    margin-top: 15%;
+    color: darkcyan;
+    padding: 10px;
+    text-align: center;
+    width: 600px;
+    height: 400px;
+    background-color: #11eded;
+    border-style: solid;
+    border-color: darkcyan;
+}
+
+.registration-form-container h1 {
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+.registration-form {
+    vertical-align: top;
+    padding: 10px;
+    margin: auto;
+    height: 300px;
+    width: 500px;
+    background-color: #deffff;
+}
+
+.registration-form p {
+    margin-top: 50px;
+    margin-bottom: 0px;
+    margin-left: 20px;
+    float: left;
+    font-family: monospace;
+    text-transform: uppercase;
+    font-size: 30px;
+}
+
+.registration-form input {
+    margin-left: 10px;
+    margin-top: 50px;
+    float: left;
+    font-family: monospace;
+    height: 30px;
+    width: 300px;
+    border-color: darkcyan;
+    border-style: solid;
+}
+.registration-form input:focus {
+}
+
+
+.registration-form-button {
+    margin-left: 32px;
+    margin-top: 50px;
+    float: left;
+    width: 200px;
+    height: 30px;
+}
+
+.registration-form-button button{
+    font-family: monospace;
+    font-weight: 600;
+    color: darkcyan;
+    text-transform: uppercase;
+    background-color: #deffff;
+    width: 100%;
+    height: 100%;
+    border-style: solid;
+    border-color: darkcyan;
+}
+
+.registration-form-button button:hover{
+    color: darkslategrey;
+}
