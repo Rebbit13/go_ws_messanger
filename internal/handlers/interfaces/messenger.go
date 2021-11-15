@@ -1,4 +1,4 @@
-package service
+package interfaces
 
 import "go_grpc_messanger/internal/entity"
 

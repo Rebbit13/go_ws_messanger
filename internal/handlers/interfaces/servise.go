@@ -1,4 +1,4 @@
-package service
+package interfaces
 
 type Service struct {
 	Messenger
