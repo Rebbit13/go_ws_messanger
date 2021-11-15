@@ -11,9 +11,6 @@ func (handler *PageHandler) getIndexPage(context *gin.Context) {
 	context.HTML(200, "index.html", gin.H{
 		"title": "Main Page",
 	})
-	//yourHtmlString := "<html><body>I am cached HTML!</body></html>"
-	//context.Writer.WriteHeader(http.StatusOK)
-	//context.Writer.Write([]byte(yourHtmlString))
 }
 
 func BindHandler(router *gin.Engine) () {
