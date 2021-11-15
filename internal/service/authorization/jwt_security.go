@@ -64,6 +64,7 @@ func (auth *JWTAuth) SignUp(username, password string) (user entity.User, access
 	accessToken, refreshToken = auth.jwtService.CreateJWTTokens(user.ID)
 	return
 }
+
 func (auth *JWTAuth) GetUser(token string) (user entity.User, err error) {
 	return auth.getUser(token)
 }
