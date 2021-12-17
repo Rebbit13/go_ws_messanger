@@ -6,7 +6,7 @@ import (
 )
 
 type RoomController struct {
-	db *gorm.DB
+	db    *gorm.DB
 	rooms []Room
 }
 
@@ -20,7 +20,7 @@ func (controller *RoomController) flushRooms() {
 }
 
 func (controller *RoomController) getRoom(id uint) (room Room, err error) {
-	for _, candidateRoom := range controller.rooms{
+	for _, candidateRoom := range controller.rooms {
 		if candidateRoom.ID == id {
 			room = candidateRoom
 			return
@@ -30,7 +30,7 @@ func (controller *RoomController) getRoom(id uint) (room Room, err error) {
 	return
 }
 
-func (controller *RoomController) NewRoom(title string) (roomEntity entity.Chat, err error) {
+func (controller *RoomController) CreateNewRoom(title string) (roomEntity entity.Chat, err error) {
 	var newChat entity.Chat
 	newChat.Title = title
 	result := controller.db.Create(&newChat)
@@ -68,7 +68,7 @@ func (controller *RoomController) SendMessage(message entity.Message) (messages 
 }
 
 func (controller *RoomController) GetAvailableRooms() (rooms []entity.Chat) {
-	for _, room := range controller.rooms{
+	for _, room := range controller.rooms {
 		rooms = append(rooms, room.chat)
 	}
 	return
