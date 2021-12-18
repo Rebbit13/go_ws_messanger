@@ -1,6 +1,7 @@
 package room
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go_grpc_messanger/internal/entity"
 	"go_grpc_messanger/internal/handlers/interfaces"
@@ -14,26 +15,31 @@ type RoomHandler struct {
 	authService interfaces.Authorization
 }
 
-func (handler *RoomHandler) checkIfAuthorised(context *gin.Context) {
-	user, err := handler.authService.GetUser(context.GetHeader("Authorization"))
+func (handler *RoomHandler) checkIfAuthorised(context *gin.Context) (user entity.User, err error) {
+	user, err = handler.authService.GetUser(context.GetHeader("Authorization"))
 	if err != nil || user.ID == 0 {
 		err = &string_error.StringError{Text: "Token is invalid"}
 		context.JSON(401, json_error_message.ErrorMessage{"Token is invalid"})
 	}
+	return
 }
 
 func (handler *RoomHandler) GetAvailableRooms(context *gin.Context) {
-	user, err := handler.authService.GetUser(context.GetHeader("Authorization"))
-	if err != nil || user.ID == 0 {
-		context.JSON(401, json_error_message.ErrorMessage{"Token is invalid"})
+	_, err := handler.checkIfAuthorised(context)
+	if err != nil {
+		return
 	}
 	rooms := handler.roomService.GetAvailableRooms()
 	context.JSON(200, rooms)
 }
 
 func (handler *RoomHandler) CreateNewRoom(context *gin.Context) {
-	var room entity.Chat
-	err := context.BindJSON(&room)
+	_, err := handler.checkIfAuthorised(context)
+	if err != nil {
+		return
+	}
+	var room RoomToCreate
+	err = context.BindJSON(&room)
 	if err != nil {
 		return
 	}
@@ -58,13 +64,20 @@ func (handler *RoomHandler) GetRoom(context *gin.Context) {
 }
 
 func (handler *RoomHandler) SendMessage(context *gin.Context) {
-	var message entity.Message
-	err := context.BindJSON(&message)
+	user, err := handler.checkIfAuthorised(context)
+	fmt.Println(context.Request.Body)
 	if err != nil {
 		return
 	}
-	messages, err := handler.roomService.SendMessage(message)
+	var message MessageToCreate
+	err = context.BindJSON(&message)
 	if err != nil {
+		context.JSON(400, err.Error())
+		return
+	}
+	messages, err := handler.roomService.SendMessage(user.ID, message.ChatID, message.Text)
+	if err != nil {
+		context.JSON(400, err.Error())
 		return
 	}
 	context.JSON(200, messages)

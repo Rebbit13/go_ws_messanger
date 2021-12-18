@@ -24,9 +24,107 @@ function addMessage(author, time, text) {
     message.appendChild(textTag);
 
     messageList.appendChild(message);
+    messageList.parentElement.scrollTop = messageList.parentElement.scrollHeight
 }
 
-function addRoomItem(text) {
+function flushMessages(roomId) {
+    var messageList = document.getElementById("messages-list");
+    while( messageList.firstChild ){
+        messageList.removeChild( messageList.firstChild );
+    }
+    var http = new XMLHttpRequest();
+    var url = "/room/" + roomId;
+    http.open("GET", url, true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token"));
+
+    http.onreadystatechange = function () {
+        if (http.readyState === XMLHttpRequest.DONE) {
+            switch (http.status) {
+                case 200:
+                    var body = JSON.parse(http.responseText);
+                    for (let message of body["Messages"]) {
+                        addMessage(
+                            message["User"]["username"],
+                            message["CreatedAt"],
+                            message["Text"]
+                        )
+                    }
+                    break;
+                default:
+                    alert(http.responseText);
+            }
+        }
+    }
+    http.send();
+}
+
+function sendMessage(event) {
+    event.preventDefault();
+
+    var roomId = parseInt(localStorage.getItem("active_chat"))
+    if (roomId === null) {
+        alert("Choose the chat or create new")
+        return
+    }
+
+    var messageInput = document.getElementById("message-input");
+
+    var http = new XMLHttpRequest();
+    var url = "/message";
+
+    http.open("POST", url, true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token"));
+
+    http.onreadystatechange = function () {
+        if (http.readyState === XMLHttpRequest.DONE) {
+            switch (http.status) {
+                case 200:
+                    flushMessages(roomId)
+                    break;
+                default:
+                    alert(http.responseText);
+            }
+        }
+    }
+    var data = JSON.stringify({"Text": messageInput.value, "ChatID": roomId});
+    http.send(data);
+    messageInput.value = ""
+}
+
+function sendMessageIfEnterPressed(event) {
+    if (event.keyCode === 13) {
+        sendMessage(event);
+    }
+}
+
+
+function refreshSendButton(roomId) {
+    localStorage.setItem("active_chat", roomId)
+}
+
+function refreshAndDisabledButtons(roomId) {
+    var oldRoom = localStorage.getItem("active_chat");
+    if (oldRoom !== "0") {
+        var oldButton = document.getElementById("connect_to_room" + oldRoom)
+        oldButton.disabled = false
+    }
+    var newRoomButton = document.getElementById("connect_to_room" + roomId)
+    newRoomButton.disabled = true
+}
+
+function createRoomConnectFunction(roomId) {
+    return function (event) {
+        event.preventDefault();
+        refreshAndDisabledButtons(roomId);
+        flushMessages(roomId);
+        refreshSendButton(roomId);
+    }
+}
+
+
+function addRoomItem(text, id, dissabled = false) {
     var roomList = document.getElementById("room-list");
 
     var room = document.createElement("form");
@@ -35,20 +133,51 @@ function addRoomItem(text) {
     var button = document.createElement("button");
     var buttonText = document.createTextNode(text);
     button.appendChild(buttonText);
+    button.id = "connect_to_room" + id
+    button.addEventListener("click", createRoomConnectFunction(id))
+    button.disabled = dissabled
 
     room.appendChild(button);
     roomList.appendChild(room);
 }
 
-function startMessenging() {
-    var rooms = document.getElementById("room-list")
+function flushRooms() {
+    var http = new XMLHttpRequest();
+    var url = "/room";
+
+    var roomList = document.getElementById("room-list");
+    while( roomList.firstChild ){
+        roomList.removeChild( roomList.firstChild );
+    }
+
+    http.open("GET", url, true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token"));
+
+    http.onreadystatechange = function () {
+        if (http.readyState === XMLHttpRequest.DONE) {
+            switch (http.status) {
+                case 200:
+                    var rooms = JSON.parse(http.responseText);
+                    for (let room of rooms){
+                        addRoomItem(room["Title"], room["ID"])
+                    }
+                    break;
+                default:
+                    alert(http.responseText);
+            }
+        }
+    }
+
+    http.send();
 }
 
 function setTokens(access_token, refresh_token) {
-    document.cookie = "access_token=" + access_token;
-    document.cookie = "refresh_token=" + refresh_token
-    var registrationWindow = document.getElementsByClassName("registration")[0]
-    registrationWindow.classList.remove("hidden")
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("refresh_token", refresh_token);
+    var registrationWindow = document.getElementById("registration");
+    registrationWindow.classList.add("hidden");
+    flushRooms();
 }
 
 function signIn(event) {
@@ -110,12 +239,71 @@ function signUp(event) {
     http.send(data);
 }
 
+function showNewRoomForm(event) {
+    event.preventDefault();
 
-function addEventListeners() {
-    var signUpButton = document.getElementById("sign_up");
-    var signInButton = document.getElementById("sign_in");
-    signUpButton.addEventListener("click", signUp);
-    signInButton.addEventListener("click", signIn)
+    var newRoomForm = document.getElementById("new_room_form")
+    newRoomForm.classList.remove("hidden")
+
 }
 
-addEventListeners();
+function createNewRoom(event) {
+    event.preventDefault();
+
+    var nameInput = document.getElementById("new-room-form-name");
+
+    var http = new XMLHttpRequest();
+    var url = "/room";
+    http.open("POST", url, true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token"));
+
+    http.onreadystatechange = function () {
+        if (http.readyState === XMLHttpRequest.DONE) {
+            switch (http.status) {
+                case 200:
+                    flushRooms();
+                    break;
+                default:
+                    alert(http.responseText);
+            }
+        }
+    }
+
+    var data = JSON.stringify({"title": nameInput.value,});
+    http.send(data);
+
+    var newRoomWindow = document.getElementById("new_room_form")
+    newRoomWindow.classList.add("hidden")
+}
+
+function addBasicEventListeners() {
+    var signUpButton = document.getElementById("sign_up");
+    signUpButton.addEventListener("click", signUp);
+
+    var signInButton = document.getElementById("sign_in");
+    signInButton.addEventListener("click", signIn);
+
+    var newRoomButton = document.getElementById("new_room");
+    newRoomButton.addEventListener("click", showNewRoomForm);
+
+    var createNewRoomButton = document.getElementById("create-new-room");
+    createNewRoomButton.addEventListener("click", createNewRoom);
+
+    var sendMessageButton = document.getElementById("send-message");
+    var sendMessageInput = document.getElementById("message-input")
+    sendMessageInput.addEventListener("keyup", sendMessageIfEnterPressed)
+    sendMessageButton.addEventListener("click", sendMessage)
+}
+
+function refreshLocalStorage() {
+    localStorage.setItem("active_chat", "0")
+}
+
+
+function start() {
+    addBasicEventListeners();
+    refreshLocalStorage();
+}
+
+start();

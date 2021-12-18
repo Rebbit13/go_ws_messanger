@@ -54,11 +54,12 @@ func (controller *RoomController) GetRoomEntity(id uint) (roomEntity entity.Chat
 	return
 }
 
-func (controller *RoomController) SendMessage(message entity.Message) (messages []entity.Message, err error) {
-	room, err := controller.getRoom(message.ChatID)
+func (controller *RoomController) SendMessage(userID uint, chatID uint, text string) (messages []entity.Message, err error) {
+	room, err := controller.getRoom(chatID)
 	if err != nil {
 		return
 	}
+	message := entity.Message{Text: text, UserID: userID, ChatID: chatID}
 	err = room.Receive(message)
 	if err != nil {
 		return

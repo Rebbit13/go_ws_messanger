@@ -162,12 +162,7 @@ body {
     height: 30px;
 }
 
-
-.hidden {
-    visibility: hidden;
-}
-
-.registration {
+.form-window {
     top: 0;
     left: 0;
     position: absolute;
@@ -177,7 +172,7 @@ body {
     z-index: 999;
 }
 
-.registration-form-container {
+.form-window-container {
     margin: auto;
     margin-top: 15%;
     color: darkcyan;
@@ -190,12 +185,12 @@ body {
     border-color: darkcyan;
 }
 
-.registration-form-container h1 {
+.form-window-container h1 {
     font-family: monospace;
     text-transform: uppercase;
 }
 
-.registration-form {
+.form-window-form {
     vertical-align: top;
     padding: 10px;
     margin: auto;
@@ -204,7 +199,8 @@ body {
     background-color: #deffff;
 }
 
-.registration-form p {
+
+.form-window-form p {
     margin-top: 50px;
     margin-bottom: 0px;
     margin-left: 20px;
@@ -214,7 +210,11 @@ body {
     font-size: 30px;
 }
 
-.registration-form input {
+.form-window-form--new-room p {
+    margin-left: 40px;
+}
+
+.form-window-form input {
     margin-left: 10px;
     margin-top: 50px;
     float: left;
@@ -225,7 +225,11 @@ body {
     border-style: solid;
 }
 
-.registration-form-button {
+.form-window-form--new-room input {
+    margin-left: 40px;
+}
+
+.form-window-button {
     margin-left: 32px;
     margin-top: 50px;
     float: left;
@@ -233,7 +237,15 @@ body {
     height: 30px;
 }
 
-.registration-form-button button{
+.form-window-button--new-room {
+    margin-left: 150px;
+    margin-top: 50px;
+    float: left;
+    width: 200px;
+    height: 30px;
+}
+
+.form-window-button button{
     font-family: monospace;
     font-weight: 600;
     color: darkcyan;
@@ -245,6 +257,10 @@ body {
     border-color: darkcyan;
 }
 
-.registration-form-button button:hover{
+.form-window-button button:hover{
     color: darkslategrey;
+}
+
+.hidden {
+    visibility: hidden;
 }

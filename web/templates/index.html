@@ -12,6 +12,9 @@
 <body>
     <div class="page">
         <div class="rooms">
+            <form class="room-list-item">
+                <button id="new_room"> ADD NEW CHAT </button>
+            </form>
             <nav id="room-list" class="room-list">
             </nav>
         </div>
@@ -21,10 +24,10 @@
                 </ul>
             </div>
             <div class="massage-input-container">
-                <input class="message-input" type="text">
+                <input class="message-input" type="text" id="message-input">
                 <div class="send-message">
-                    <form action="">
-                        <button>
+                    <form>
+                        <button id="send-message">
                             <img src="static/images/svg/free-icon-angle-double-right-3916755.svg" alt="send">
                         </button>
                     </form>
@@ -32,19 +35,31 @@
             </div>
         </div>
     </div>
-    <div class="registration">
-        <div class="registration-form-container">
+    <div class="form-window" id="registration">
+        <div class="form-window-container">
             <h1>Rebbit13 go messenger</h1>
-            <div class="registration-form">
+            <div class="form-window-form">
                 <p>Username</p>
                 <input id="registration-form-username" type="text">
                 <p>Password</p>
                 <input id="registration-form-password" type="password">
-                <form id="sign_up" class="registration-form-button" action="">
+                <form id="sign_up" class="form-window-button" action="">
                     <button>Sign up</button>
                 </form>
-                <form id="sign_in" class="registration-form-button" action="">
+                <form id="sign_in" class="form-window-button" action="">
                     <button>Sign in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="form-window hidden" id="new_room_form">
+        <div class="form-window-container">
+            <h1>Name the room</h1>
+            <div class="form-window-form form-window-form--new-room">
+                <p>Name</p>
+                <input id="new-room-form-name" type="text">
+                <form id="create-new-room" class="form-window-button form-window-button--new-room" action="">
+                    <button>Name it</button>
                 </form>
             </div>
         </div>
