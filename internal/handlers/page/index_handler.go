@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type PageHandler struct {}
+type PageHandler struct{}
 
 func (handler *PageHandler) getIndexPage(context *gin.Context) {
 	context.Header("content-type", "text/html")
@@ -13,7 +13,7 @@ func (handler *PageHandler) getIndexPage(context *gin.Context) {
 	})
 }
 
-func BindHandler(router *gin.Engine) () {
+func BindHandler(router *gin.Engine) {
 	router.Static("/static", "./web/templates/static")
 	router.LoadHTMLGlob("web/templates/*.html")
 	var handler = PageHandler{}

@@ -10,13 +10,10 @@ type SqliteDatabase struct {
 }
 
 func (database *SqliteDatabase) InitDatabase(entities []interface{}) {
-	// Init db
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
-
-	// Migrate the schema
 	for _, model := range entities {
 		err = db.AutoMigrate(model)
 		if err != nil {
