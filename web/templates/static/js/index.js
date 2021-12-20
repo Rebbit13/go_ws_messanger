@@ -27,69 +27,22 @@ function addMessage(author, time, text) {
     messageList.parentElement.scrollTop = messageList.parentElement.scrollHeight
 }
 
-function flushMessages(roomId) {
+function flushMessages() {
     var messageList = document.getElementById("messages-list");
     while( messageList.firstChild ){
         messageList.removeChild( messageList.firstChild );
     }
-    var http = new XMLHttpRequest();
-    var url = "/room/" + roomId;
-    http.open("GET", url, true);
-    http.setRequestHeader("Content-Type", "application/json");
-    http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token"));
-
-    http.onreadystatechange = function () {
-        if (http.readyState === XMLHttpRequest.DONE) {
-            switch (http.status) {
-                case 200:
-                    var body = JSON.parse(http.responseText);
-                    for (let message of body["Messages"]) {
-                        addMessage(
-                            message["User"]["username"],
-                            message["CreatedAt"],
-                            message["Text"]
-                        )
-                    }
-                    break;
-                default:
-                    alert(http.responseText);
-            }
-        }
-    }
-    http.send();
 }
 
 function sendMessage(event) {
     event.preventDefault();
-
     var roomId = parseInt(localStorage.getItem("active_chat"))
-    if (roomId === null) {
+    if (roomId === null || sub === null) {
         alert("Choose the chat or create new")
         return
     }
-
     var messageInput = document.getElementById("message-input");
-
-    var http = new XMLHttpRequest();
-    var url = "/message";
-
-    http.open("POST", url, true);
-    http.setRequestHeader("Content-Type", "application/json");
-    http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token"));
-
-    http.onreadystatechange = function () {
-        if (http.readyState === XMLHttpRequest.DONE) {
-            switch (http.status) {
-                case 200:
-                    flushMessages(roomId)
-                    break;
-                default:
-                    alert(http.responseText);
-            }
-        }
-    }
-    var data = JSON.stringify({"Text": messageInput.value, "ChatID": roomId});
-    http.send(data);
+    sub.publish(messageInput.value)
     messageInput.value = ""
 }
 
@@ -116,9 +69,14 @@ function refreshAndDisabledButtons(roomId) {
 
 function createRoomConnectFunction(roomId) {
     return function (event) {
+        if (sub !== null) {
+            sub.unsubscribe();
+        }
+        flushMessages();
         event.preventDefault();
         refreshAndDisabledButtons(roomId);
-        flushMessages(roomId);
+        sub = centrifuge.subscribe(roomId.toString(), receiveMessage);
+        centrifuge.connect();
         refreshSendButton(roomId);
     }
 }
@@ -175,6 +133,8 @@ function flushRooms() {
 function setTokens(access_token, refresh_token) {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
+    document.cookie = "access_token=" + access_token
+    document.cookie = "refresh_token=" + refresh_token
     var registrationWindow = document.getElementById("registration");
     registrationWindow.classList.add("hidden");
     flushRooms();
@@ -300,10 +260,20 @@ function refreshLocalStorage() {
     localStorage.setItem("active_chat", "0")
 }
 
+function receiveMessage(context) {
+    var body = context.data;
+    addMessage(
+        body["User"]["username"],
+        body["CreatedAt"],
+        body["Text"]
+    )
+}
 
 function start() {
     addBasicEventListeners();
     refreshLocalStorage();
 }
 
+const centrifuge = new Centrifuge('ws://localhost:8080/connection/websocket');
+var sub = null
 start();

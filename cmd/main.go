@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go_grpc_messanger/internal/entity"
 	"go_grpc_messanger/internal/handlers/auth"
+	"go_grpc_messanger/internal/handlers/centrifuge_messenger"
 	room "go_grpc_messanger/internal/handlers/chat"
 	"go_grpc_messanger/internal/handlers/page"
 	"go_grpc_messanger/internal/service/authorization"
@@ -26,8 +27,6 @@ func main() {
 	auth.BindHandler(&authService, r)
 	page.BindHandler(r)
 	room.BindHandler(&roomService, &authService, r)
-	err = r.Run()
-	if err != nil {
-		panic(err)
-	}
+	centrifuge_messenger.BindHandler(&roomService, &authService, r)
+	r.Run()
 }

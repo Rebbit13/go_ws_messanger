@@ -15,14 +15,7 @@
         div.innerHTML = text + '<br>';
         document.body.appendChild(div);
     }
-    centrifuge.on('connect', function(ctx){
-        drawText('Connected over ' + ctx.transport);
-    });
-    centrifuge.on('disconnect', function(ctx){
-        drawText('Disconnected: ' + ctx.reason);
-    });
     const sub = centrifuge.subscribe("chat", function(ctx) {
-        console.log(ctx)
         drawText(JSON.stringify(ctx.data));
     })
     const input = document.getElementById("input");

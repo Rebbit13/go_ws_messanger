@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-gonic/gin"
-	jsoniter "github.com/json-iterator/go"
 	"go_grpc_messanger/internal/entity"
 	"go_grpc_messanger/internal/handlers/interfaces"
 	"go_grpc_messanger/pkg/json_error_message"
@@ -22,7 +21,8 @@ type CentrifugeBroker struct {
 
 func (broker *CentrifugeBroker) auth(h http.Handler) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		user, err := broker.authService.GetUser(context.GetHeader("Authorization"))
+		auth, err := context.Cookie("access_token")
+		user, err := broker.authService.GetUser(fmt.Sprintf("Bearer %s", auth))
 		if err != nil || user.ID == 0 {
 			err = &string_error.StringError{Text: "Token is invalid"}
 			context.JSON(401, json_error_message.ErrorMessage{"Token is invalid"})
@@ -67,7 +67,7 @@ func (broker *CentrifugeBroker) initNodeConfiguration() {
 
 		client.OnPublish(func(e centrifuge.PublishEvent, cb centrifuge.PublishCallback) {
 			var user entity.User
-			err := jsoniter.Unmarshal(client.Info(), &user)
+			err := json.Unmarshal(client.Info(), &user)
 			roomIdQuery, _ := strconv.ParseUint(e.Channel, 10, 64)
 			if err != nil {
 				fmt.Println(err)
