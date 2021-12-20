@@ -10,7 +10,7 @@ type SqliteDatabase struct {
 }
 
 func (database *SqliteDatabase) InitDatabase(entities []interface{}) {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("chat.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}

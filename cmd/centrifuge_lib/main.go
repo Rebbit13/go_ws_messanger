@@ -10,6 +10,7 @@ import (
 	"go_grpc_messanger/internal/service/authorization"
 	"go_grpc_messanger/internal/service/chat"
 	"go_grpc_messanger/internal/storage"
+	"os"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func main() {
 	var databaseComposer = storage.SqliteDatabase{}
 	databaseComposer.InitDatabase(entities)
 	db := databaseComposer.GetDatabase()
-	authService, err := authorization.NewJWTAuth(db, []byte("secretsecret"), time.Duration(300000), time.Duration(303000))
+	authService, err := authorization.NewJWTAuth(db, []byte(os.Getenv("JWT_SECRET")), time.Duration(30*time.Minute), time.Duration(31*time.Minute))
 	roomService := chat.NewRoomController(db)
 	if err != nil {
 		panic(err)

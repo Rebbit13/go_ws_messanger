@@ -133,8 +133,10 @@ function flushRooms() {
 function setTokens(access_token, refresh_token) {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
+    console.log(document.cookie)
     document.cookie = "access_token=" + access_token
     document.cookie = "refresh_token=" + refresh_token
+    console.log(document.cookie)
     var registrationWindow = document.getElementById("registration");
     registrationWindow.classList.add("hidden");
     flushRooms();
